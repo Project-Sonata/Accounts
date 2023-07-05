@@ -1,5 +1,6 @@
 package com.odeyalo.sonata.account.support.token;
 
+import com.odeyalo.sonata.account.support.token.converter.ValidatedAccessTokenConverter;
 import com.odeyalo.sonata.common.authorization.TokenIntrospectionRequest;
 import com.odeyalo.sonata.common.authorization.TokenIntrospectionResponse;
 import org.slf4j.Logger;
@@ -15,9 +16,11 @@ import reactor.core.publisher.Mono;
 public class WebClientRemoteAccessTokenValidationStrategy implements RemoteAccessTokenValidationStrategy {
     private final Logger logger = LoggerFactory.getLogger(WebClientRemoteAccessTokenValidationStrategy.class);
     private final WebClient tokenValidationWebClient;
+    private final ValidatedAccessTokenConverter<TokenIntrospectionResponse> accessTokenConverter;
 
-    public WebClientRemoteAccessTokenValidationStrategy(WebClient tokenValidationWebClient) {
+    public WebClientRemoteAccessTokenValidationStrategy(WebClient tokenValidationWebClient, ValidatedAccessTokenConverter<TokenIntrospectionResponse> accessTokenConverter) {
         this.tokenValidationWebClient = tokenValidationWebClient;
+        this.accessTokenConverter = accessTokenConverter;
     }
 
     @Override
@@ -27,16 +30,6 @@ public class WebClientRemoteAccessTokenValidationStrategy implements RemoteAcces
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(Mono.just(TokenIntrospectionRequest.of(tokenValue)), TokenIntrospectionRequest.class)
                 .exchangeToMono(response -> response.bodyToMono(TokenIntrospectionResponse.class))
-                .map(this::convertTo);
-    }
-
-    private ValidatedAccessToken convertTo(TokenIntrospectionResponse body) {
-        if (!body.isValid()) {
-            return ValidatedAccessToken.invalid();
-        }
-        AccessTokenMetadata metadata = AccessTokenMetadata.of(body.getUserId(), body.getScope().split(" "),
-                body.getIssuedAt(), body.getExpiresIn());
-
-        return ValidatedAccessToken.valid(metadata);
+                .map(accessTokenConverter::convertTo);
     }
 }
