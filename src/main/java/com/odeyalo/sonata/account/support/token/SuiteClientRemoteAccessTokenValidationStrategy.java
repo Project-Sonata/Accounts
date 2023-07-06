@@ -26,7 +26,7 @@ public class SuiteClientRemoteAccessTokenValidationStrategy implements RemoteAcc
     @Override
     public Mono<ValidatedAccessToken> validateAccessToken(String tokenValue) {
         return tokenIntrospectionClient.introspectToken(TokenIntrospectionRequest.of(tokenValue))
-                .flatMap(HttpEntity::getBody)
+                .flatMap(r -> r.getBody() != null ? r.getBody() : Mono.empty())
                 .map(accessTokenConverter::convertTo);
     }
 }
