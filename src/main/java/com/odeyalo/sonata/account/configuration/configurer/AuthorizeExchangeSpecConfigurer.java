@@ -15,7 +15,7 @@ public class AuthorizeExchangeSpecConfigurer implements Customizer<ServerHttpSec
     public void customize(ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchangeSpec) {
         authorizeExchangeSpec
                 .pathMatchers(HttpMethod.GET, "/account/me")
-                .hasAuthority("SCOPE_ACCOUNT_READ")
+                .hasAuthority("user-read")
                 .anyExchange()
                 .permitAll();
     }
