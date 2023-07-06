@@ -1,19 +1,16 @@
 package com.odeyalo.sonata.account.web.security.auth;
 
-import com.odeyalo.sonata.account.SharedComponent;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner;
-import org.springframework.cloud.contract.stubrunner.spring.StubRunnerPort;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.context.TestPropertySource;
+import reactor.core.publisher.Hooks;
 
 import java.util.List;
 
@@ -27,16 +24,24 @@ import static org.springframework.cloud.contract.stubrunner.spring.StubRunnerPro
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureStubRunner(stubsMode = REMOTE,
         repositoryRoot = "git://https://github.com/Project-Sonata/Sonata-Contracts.git",
-        ids = "com.odeyalo.sonata:authorization:+:stubs:${stubrunner.runningstubs.authorization.port}")
-@Import(SharedComponent.class)
+        ids = "com.odeyalo.sonata:authorization:+:stubs")
+//@AutoConfigureWireMock(port = 1000)
 @TestPropertySource(locations = "classpath:application-test.properties")
 class TokenAuthenticationManagerTest {
+
+
+    public static final String INVALID_TOKEN = "invalidtoken";
+    public static final String VALID_ACCESS_TOKEN = "mikunakanoisthebestgirl";
 
     @Autowired
     TokenAuthenticationManager tokenAuthenticationManager;
 
-    String validAccessToken = "mikunakanoisthebestgirl";
     List<String> predefinedScopes = List.of("read", "write");
+
+    @BeforeAll
+    void hardCodedTestsPass() {
+        Hooks.onOperatorDebug();
+    }
 
     @Test
     void authenticateWithValidToken_AndExpectTrueInAuthenticated() {
@@ -57,15 +62,22 @@ class TokenAuthenticationManagerTest {
         assertEquals("Odeyalo", authentication.getPrincipal());
     }
 
-    private Authentication prepareValidTokenAndGetResult(String username) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, validAccessToken);
-        return tokenAuthenticationManager.authenticate(authenticationToken).block();
+    @Test
+    void authenticateWithNotValidAuthenticationImpl_andExpectEmptyMono() {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken("principal", "credentials");
+        Authentication result = tokenAuthenticationManager.authenticate(authenticationToken).block();
+        assertNull(result, "Result must be null, if wrong authentication object was provided!");
     }
 
     @Test
     void authenticationWithInvalidToken_AndExpectNull() throws Exception {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken("Masiro", "invalid_token");
+        TokenAuthentication authenticationToken = new TokenAuthentication("Masiro", INVALID_TOKEN);
         Authentication result = tokenAuthenticationManager.authenticate(authenticationToken).block();
         assertNull(result, "If token is invalid, then null must be returned");
+    }
+
+    private Authentication prepareValidTokenAndGetResult(String username) {
+        TokenAuthentication authenticationToken = new TokenAuthentication(username, VALID_ACCESS_TOKEN);
+        return tokenAuthenticationManager.authenticate(authenticationToken).block();
     }
 }
