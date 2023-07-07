@@ -2,20 +2,20 @@ package com.odeyalo.sonata.account.configuration.configurer;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity.AuthorizeExchangeSpec;
 import org.springframework.stereotype.Component;
 
 /**
- * Helper class to configure the {@link ServerHttpSecurity.AuthorizeExchangeSpec}
+ * Helper class to configure the {@link AuthorizeExchangeSpec}
  */
 @Component
-public class AuthorizeExchangeSpecConfigurer implements Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> {
+public class AuthorizeExchangeSpecConfigurer implements Customizer<AuthorizeExchangeSpec> {
 
     @Override
-    public void customize(ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchangeSpec) {
+    public void customize(AuthorizeExchangeSpec authorizeExchangeSpec) {
         authorizeExchangeSpec
                 .pathMatchers(HttpMethod.GET, "/account/me")
-                .hasAuthority("user-read")
+                .hasAuthority("user-account-modify")
                 .anyExchange()
                 .permitAll();
     }
