@@ -30,7 +30,7 @@ import static org.springframework.cloud.contract.stubrunner.spring.StubRunnerPro
 @AutoConfigureWebTestClient
 @AutoConfigureStubRunner(stubsMode = REMOTE,
         repositoryRoot = "git://https://github.com/Project-Sonata/Sonata-Contracts.git",
-        ids = "com.odeyalo.sonata:authorization:*")
+        ids = "com.odeyalo.sonata:authorization:+")
 @Import(SharedComponent.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
 class AccountControllerTest {
