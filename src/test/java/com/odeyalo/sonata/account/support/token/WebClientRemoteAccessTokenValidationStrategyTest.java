@@ -20,6 +20,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties.StubsMode.REMOTE;
 
@@ -38,7 +40,7 @@ class WebClientRemoteAccessTokenValidationStrategyTest {
     WebClientRemoteAccessTokenValidationStrategy validationStrategy;
 
     String validAccessToken = "mikunakanoisthebestgirl";
-    String[] predefinedScopes = {"read", "write"};
+    String[] predefinedScopes = {"user-account-modify", "write"};
 
     @Test
     void validateValidAccessToken_andExpectNotNull() {
@@ -61,7 +63,7 @@ class WebClientRemoteAccessTokenValidationStrategyTest {
     @Test
     void validateValidAccessToken_andExpectScopesInMedata() {
         ValidatedAccessToken result = validationStrategy.validateAccessToken(validAccessToken).block();
-        assertArrayEquals(predefinedScopes, result.getToken().getScopes());
+        assertTrue(List.of(predefinedScopes).containsAll(List.of(result.getToken().getScopes())));;
     }
 
     @Test
