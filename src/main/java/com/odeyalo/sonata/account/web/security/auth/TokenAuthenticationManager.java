@@ -1,5 +1,6 @@
 package com.odeyalo.sonata.account.web.security.auth;
 
+import com.odeyalo.sonata.account.exception.InvalidAccessTokenException;
 import com.odeyalo.sonata.account.support.token.ReactiveAccessTokenValidator;
 import com.odeyalo.sonata.account.support.token.ValidatedAccessToken;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +45,7 @@ public class TokenAuthenticationManager implements ReactiveAuthenticationManager
                         Set<GrantedAuthority> authorities = convertScopesToAuthorities(validatedAccessToken);
                         return Mono.just(TokenAuthentication.authenticated(tokenAuthentication, authorities));
                     }
-                    return Mono.empty();
+                    return Mono.error(new InvalidAccessTokenException("Invalid access token!"));
                 });
     }
 
