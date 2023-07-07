@@ -9,6 +9,8 @@ import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRun
 import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Hooks;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties.StubsMode.REMOTE;
 
@@ -25,7 +27,7 @@ class SuiteClientRemoteAccessTokenValidationStrategyTest {
 
     public static final String VALID_ACCESS_TOKEN = "mikunakanoisthebestgirl";
 
-    String[] predefinedScopes = {"read", "write"};
+    String[] predefinedScopes = {"user-account-modify", "write"};
 
     @BeforeAll
     void setup() {
@@ -53,7 +55,11 @@ class SuiteClientRemoteAccessTokenValidationStrategyTest {
     @Test
     void validateValidAccessToken_andExpectScopesInMedata() {
         ValidatedAccessToken result = validationStrategy.validateAccessToken(VALID_ACCESS_TOKEN).block();
-        assertArrayEquals(predefinedScopes, result.getToken().getScopes());
+        List<String> expectedScopes = List.of(predefinedScopes);
+        List<String> actualScopes = List.of(result.getToken().getScopes());
+        assertTrue(expectedScopes.size() == actualScopes.size()
+                && expectedScopes.containsAll(actualScopes) &&
+                actualScopes.containsAll(expectedScopes));
     }
 
     @Test

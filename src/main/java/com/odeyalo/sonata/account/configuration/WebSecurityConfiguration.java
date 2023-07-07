@@ -1,5 +1,6 @@
 package com.odeyalo.sonata.account.configuration;
 
+import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,19 +13,26 @@ import org.springframework.security.web.server.authentication.AuthenticationWebF
 
 @Configuration
 @EnableWebFluxSecurity
+@Builder
 public class WebSecurityConfiguration {
     @Autowired
     Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> authorizeExchangeSpecCustomizer;
-
+    @Autowired
+    Customizer<ServerHttpSecurity.ExceptionHandlingSpec> exceptionHandlingSpecCustomizer;
+    @Autowired
+    Customizer<ServerHttpSecurity.CorsSpec> corsSpecCustomizer;
+    @Autowired
+    Customizer<ServerHttpSecurity.CsrfSpec> csrfSpecCustomizer;
     @Autowired
     AuthenticationWebFilter authenticationWebFilter;
 
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity httpSecurity) {
         return httpSecurity
-                .cors((ServerHttpSecurity.CorsSpec::disable))
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .cors(corsSpecCustomizer)
+                .csrf(csrfSpecCustomizer)
                 .authorizeExchange(authorizeExchangeSpecCustomizer)
+                .exceptionHandling(exceptionHandlingSpecCustomizer)
                 .addFilterAt(authenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
