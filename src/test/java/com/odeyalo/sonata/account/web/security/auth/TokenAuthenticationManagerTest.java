@@ -1,5 +1,6 @@
 package com.odeyalo.sonata.account.web.security.auth;
 
+import com.odeyalo.sonata.account.exception.InvalidAccessTokenException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -11,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Hooks;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.util.List;
 
@@ -25,7 +28,6 @@ import static org.springframework.cloud.contract.stubrunner.spring.StubRunnerPro
 @AutoConfigureStubRunner(stubsMode = REMOTE,
         repositoryRoot = "git://https://github.com/Project-Sonata/Sonata-Contracts.git",
         ids = "com.odeyalo.sonata:authorization:+:stubs")
-//@AutoConfigureWireMock(port = 1000)
 @TestPropertySource(locations = "classpath:application-test.properties")
 class TokenAuthenticationManagerTest {
 
@@ -36,7 +38,7 @@ class TokenAuthenticationManagerTest {
     @Autowired
     TokenAuthenticationManager tokenAuthenticationManager;
 
-    List<String> predefinedScopes = List.of("read", "write");
+    List<String> predefinedScopes = List.of("user-account-modify", "write");
 
     @BeforeAll
     void hardCodedTestsPass() {
@@ -65,15 +67,19 @@ class TokenAuthenticationManagerTest {
     @Test
     void authenticateWithNotValidAuthenticationImpl_andExpectEmptyMono() {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken("principal", "credentials");
-        Authentication result = tokenAuthenticationManager.authenticate(authenticationToken).block();
-        assertNull(result, "Result must be null, if wrong authentication object was provided!");
+        Mono<Authentication> result = tokenAuthenticationManager.authenticate(authenticationToken);
+        StepVerifier.create(result)
+                .expectComplete()
+                .verify();
     }
 
     @Test
-    void authenticationWithInvalidToken_AndExpectNull() throws Exception {
+    void authenticationWithInvalidToken_AndExpectError() throws Exception {
         TokenAuthentication authenticationToken = new TokenAuthentication("Masiro", INVALID_TOKEN);
-        Authentication result = tokenAuthenticationManager.authenticate(authenticationToken).block();
-        assertNull(result, "If token is invalid, then null must be returned");
+        Mono<Authentication> result = tokenAuthenticationManager.authenticate(authenticationToken);
+        StepVerifier.create(result)
+                .expectError(InvalidAccessTokenException.class)
+                .verify();
     }
 
     private Authentication prepareValidTokenAndGetResult(String username) {
