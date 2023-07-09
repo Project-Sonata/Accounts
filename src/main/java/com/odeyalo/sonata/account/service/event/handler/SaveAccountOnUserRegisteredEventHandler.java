@@ -23,14 +23,16 @@ public class SaveAccountOnUserRegisteredEventHandler implements UserRegisteredEv
     @Override
     public Mono<Void> handleEvent(UserRegisteredEvent event) {
         UserRegisteredEventData registeredUser = event.getEventData();
+
         PersistableAccount account = PersistableAccount.builder()
                 .email(registeredUser.email())
                 .username(RandomStringUtils.randomAlphabetic(20))
-                .birthdate(LocalDate.of(2000, Month.MAY, 5))
-                .countryCode("JP")
-                .gender(Gender.FEMALE)
+                .birthdate(registeredUser.getBirthdate())
+                .countryCode(registeredUser.getCountryCode())
+                .gender(Gender.valueOf(registeredUser.getGender()))
                 .id(registeredUser.id())
                 .creationTime(System.currentTimeMillis()).build();
+
         return accountStorage.save(account)
                 .checkpoint("Save the user account")
                 .then();
