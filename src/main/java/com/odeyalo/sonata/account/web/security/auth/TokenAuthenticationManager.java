@@ -1,6 +1,7 @@
 package com.odeyalo.sonata.account.web.security.auth;
 
 import com.odeyalo.sonata.account.exception.InvalidAccessTokenException;
+import com.odeyalo.sonata.account.support.token.AccessTokenMetadata;
 import com.odeyalo.sonata.account.support.token.ReactiveAccessTokenValidator;
 import com.odeyalo.sonata.account.support.token.ValidatedAccessToken;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +44,9 @@ public class TokenAuthenticationManager implements ReactiveAuthenticationManager
                 .flatMap(validatedAccessToken -> {
                     if (validatedAccessToken.isValid()) {
                         Set<GrantedAuthority> authorities = convertScopesToAuthorities(validatedAccessToken);
-                        return Mono.just(TokenAuthentication.authenticated(tokenAuthentication, authorities));
+                        AccessTokenMetadata metadata = validatedAccessToken.getToken();
+                        AuthenticatedUserDetails details = new AuthenticatedUserDetails(metadata.getUserId(), tokenAuthentication.getName(), accessToken, authorities);
+                        return Mono.just(AuthenticatedUser.of(tokenAuthentication.getName(), details, accessToken, authorities));
                     }
                     return Mono.error(new InvalidAccessTokenException("Invalid access token!"));
                 });
