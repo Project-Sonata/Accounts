@@ -16,6 +16,8 @@ public class AuthorizeExchangeSpecConfigurer implements Customizer<AuthorizeExch
         authorizeExchangeSpec
                 .pathMatchers(HttpMethod.GET, "/account/me")
                 .hasAuthority("user-account-modify")
+                .pathMatchers(HttpMethod.PUT, "/account/settings/**")
+                .hasAuthority("user-account-modify")
                 .anyExchange()
                 .permitAll();
     }
