@@ -19,10 +19,12 @@ import static org.springframework.cloud.contract.stubrunner.spring.StubRunnerPro
 
 @AutoConfigureStubRunner(stubsMode = REMOTE,
         repositoryRoot = "git://https://github.com/Project-Sonata/Sonata-Contracts.git",
-        ids = "com.odeyalo.sonata:authorization:+")
+        ids = {"com.odeyalo.sonata:authorization:+", "com.odeyalo.sonata:authentication:+"})
 @Import(SharedComponent.class)
 public class ChangePasswordAccountSettingsControllerTest extends AccountSettingsControllerTest {
 
+    public static final String VALID_OLD_PASSWORD = "old_password_123";
+    public static final String VALID_NEW_PASSWORD = "neW_password123";
     @Autowired
     WebTestClient webTestClient;
 
@@ -31,6 +33,7 @@ public class ChangePasswordAccountSettingsControllerTest extends AccountSettings
     public static final String VALID_ACCESS_TOKEN = "mikunakanoisthebestgirl";
     public static final String INVALID_ACCESS_TOKEN = "invalidtoken";
     public static final String PREFIX = "Bearer";
+
 
     @BeforeAll
     public void setup() {
@@ -67,13 +70,13 @@ public class ChangePasswordAccountSettingsControllerTest extends AccountSettings
         }
 
         WebTestClient.ResponseSpec prepareAndSendValidChangePasswordRequest() {
-            ChangePasswordDto changePasswordDto = new ChangePasswordDto("old_password123", "new_password123");
+            ChangePasswordDto changePasswordDto = new ChangePasswordDto(VALID_OLD_PASSWORD, VALID_NEW_PASSWORD);
             return sendChangePasswordRequest(changePasswordDto, PREFIX + " " + VALID_ACCESS_TOKEN);
         }
     }
 
     @Nested
-    class ChangePasswordWithInvalidOldPassword  {
+    class ChangePasswordWithInvalidOldPassword {
         String invalidOldPassword = "invalid";
 
         @Test
@@ -118,57 +121,57 @@ public class ChangePasswordAccountSettingsControllerTest extends AccountSettings
 
 
         WebTestClient.ResponseSpec prepareAndSendRequestWithInvalidOldPassword() {
-            ChangePasswordDto invalidRequestBody = new ChangePasswordDto(invalidOldPassword, "new_password123");
+            ChangePasswordDto invalidRequestBody = new ChangePasswordDto(invalidOldPassword, "neW_password123");
             return sendChangePasswordRequest(invalidRequestBody, PREFIX + " " + VALID_ACCESS_TOKEN);
         }
     }
 
     @Nested
-    class ChangePasswordWithInvalidNewPassword  {
+    class ChangePasswordWithInvalidNewPassword {
         String invalidNewPassword = "invalid";
 
         @Test
         void expectApplicationJson() {
-            WebTestClient.ResponseSpec exchange = prepareAndSendRequestWithInvalidOldPassword();
+            WebTestClient.ResponseSpec exchange = prepareAndSendRequestWithInvalidNewPassword();
             exchange.expectHeader().contentType(MediaType.APPLICATION_JSON);
         }
 
         @Test
         void expectBadRequestStatus() {
-            WebTestClient.ResponseSpec exchange = prepareAndSendRequestWithInvalidOldPassword();
+            WebTestClient.ResponseSpec exchange = prepareAndSendRequestWithInvalidNewPassword();
             exchange.expectStatus().isBadRequest();
         }
 
         @Test
         void expectNotNullBody() {
-            WebTestClient.ResponseSpec exchange = prepareAndSendRequestWithInvalidOldPassword();
+            WebTestClient.ResponseSpec exchange = prepareAndSendRequestWithInvalidNewPassword();
             PasswordChangingResultDto body = exchange.expectBody(PasswordChangingResultDto.class).returnResult().getResponseBody();
             assertNotNull(body);
         }
 
         @Test
         void expectFalseInResponseBody() {
-            WebTestClient.ResponseSpec exchange = prepareAndSendRequestWithInvalidOldPassword();
+            WebTestClient.ResponseSpec exchange = prepareAndSendRequestWithInvalidNewPassword();
             PasswordChangingResultDto body = exchange.expectBody(PasswordChangingResultDto.class).returnResult().getResponseBody();
             assertFalse(body.isUpdated(), "If password has been failed to update, then false must be set to updated field");
         }
 
         @Test
         void expectNotNullErrorDetailsInResponseBody() {
-            WebTestClient.ResponseSpec exchange = prepareAndSendRequestWithInvalidOldPassword();
+            WebTestClient.ResponseSpec exchange = prepareAndSendRequestWithInvalidNewPassword();
             PasswordChangingResultDto body = exchange.expectBody(PasswordChangingResultDto.class).returnResult().getResponseBody();
             assertNotNull(body.getErrorDetails(), "If password has been failed to update, then error details must be presented");
         }
 
         @Test
         void expectErrorDetailsCodeInResponseBody() {
-            WebTestClient.ResponseSpec exchange = prepareAndSendRequestWithInvalidOldPassword();
+            WebTestClient.ResponseSpec exchange = prepareAndSendRequestWithInvalidNewPassword();
             PasswordChangingResultDto body = exchange.expectBody(PasswordChangingResultDto.class).returnResult().getResponseBody();
-            assertEquals(body.getErrorDetails().getCode(), "invalid_password", "If new password is wrong, then code must be set to proper one");
+            assertEquals("new_password_pattern_mismatch", body.getErrorDetails().getCode(), "If new password is wrong, then code must be set to proper one");
         }
 
 
-        WebTestClient.ResponseSpec prepareAndSendRequestWithInvalidOldPassword() {
+        WebTestClient.ResponseSpec prepareAndSendRequestWithInvalidNewPassword() {
             ChangePasswordDto invalidRequestBody = new ChangePasswordDto("old_password123", invalidNewPassword);
             return sendChangePasswordRequest(invalidRequestBody, PREFIX + " " + VALID_ACCESS_TOKEN);
         }
@@ -200,7 +203,5 @@ public class ChangePasswordAccountSettingsControllerTest extends AccountSettings
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange();
-
     }
-
 }
