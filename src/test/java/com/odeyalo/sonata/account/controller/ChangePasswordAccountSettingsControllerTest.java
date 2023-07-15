@@ -23,8 +23,6 @@ import static org.springframework.cloud.contract.stubrunner.spring.StubRunnerPro
 @Import(SharedComponent.class)
 public class ChangePasswordAccountSettingsControllerTest extends AccountSettingsControllerTest {
 
-    public static final String VALID_OLD_PASSWORD = "old_password_123";
-    public static final String VALID_NEW_PASSWORD = "neW_password123";
     @Autowired
     WebTestClient webTestClient;
 
@@ -33,6 +31,8 @@ public class ChangePasswordAccountSettingsControllerTest extends AccountSettings
     public static final String VALID_ACCESS_TOKEN = "mikunakanoisthebestgirl";
     public static final String INVALID_ACCESS_TOKEN = "invalidtoken";
     public static final String PREFIX = "Bearer";
+    public static final String VALID_OLD_PASSWORD = "old_password123";
+    public static final String VALID_NEW_PASSWORD = "neW_password123";
 
 
     @BeforeAll
