@@ -1,8 +1,10 @@
 package com.odeyalo.sonata.account.support.token;
 
-import com.odeyalo.sonata.account.support.token.converter.ValidatedAccessTokenConverter;
 import com.odeyalo.sonata.common.authorization.TokenIntrospectionRequest;
 import com.odeyalo.sonata.common.authorization.TokenIntrospectionResponse;
+import com.odeyalo.suite.security.auth.token.RemoteAccessTokenValidationStrategy;
+import com.odeyalo.suite.security.auth.token.ValidatedAccessToken;
+import com.odeyalo.suite.security.auth.token.converter.ValidatedAccessTokenConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;

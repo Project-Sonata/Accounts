@@ -1,9 +1,9 @@
 package com.odeyalo.sonata.account.service.password;
 
-import com.odeyalo.sonata.account.web.security.auth.AuthenticatedUser;
 import com.odeyalo.sonata.common.authentication.dto.request.PasswordContainerDto;
 import com.odeyalo.sonata.common.authentication.exception.PasswordUpdatingFailedException;
 import com.odeyalo.sonata.suite.reactive.client.ReactiveAuthenticationClient;
+import com.odeyalo.suite.security.auth.AuthenticatedUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
