@@ -3,7 +3,7 @@ package com.odeyalo.sonata.account.controller;
 import com.odeyalo.sonata.account.dto.AccountInformationDto;
 import com.odeyalo.sonata.account.repository.storage.PersistableAccount;
 import com.odeyalo.sonata.account.repository.storage.ReactiveAccountStorage;
-import com.odeyalo.sonata.account.web.security.auth.AuthenticatedSubject;
+import com.odeyalo.suite.security.auth.AuthenticatedSubject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;

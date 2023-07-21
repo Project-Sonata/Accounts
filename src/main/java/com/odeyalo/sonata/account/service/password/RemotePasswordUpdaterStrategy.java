@@ -1,6 +1,6 @@
 package com.odeyalo.sonata.account.service.password;
 
-import com.odeyalo.sonata.account.web.security.auth.AuthenticatedUser;
+import com.odeyalo.suite.security.auth.AuthenticatedUser;
 import reactor.core.publisher.Mono;
 
 /**

@@ -1,8 +1,8 @@
 package com.odeyalo.sonata.account.configuration;
 
-import com.odeyalo.sonata.account.web.filter.UserAuthenticationWebFilter;
-import com.odeyalo.sonata.account.web.security.auth.TokenServerAuthenticationConverter;
-import com.odeyalo.sonata.account.web.security.auth.support.AccessTokenExtractor;
+import com.odeyalo.suite.security.auth.TokenServerAuthenticationConverter;
+import com.odeyalo.suite.security.auth.support.AccessTokenExtractor;
+import com.odeyalo.suite.security.web.filter.UserAuthenticationWebFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

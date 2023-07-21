@@ -1,8 +1,8 @@
 package com.odeyalo.sonata.account.configuration;
 
-import com.odeyalo.sonata.account.support.token.converter.ValidatedAccessTokenConverter;
 import com.odeyalo.sonata.account.support.token.WebClientRemoteAccessTokenValidationStrategy;
 import com.odeyalo.sonata.common.authorization.TokenIntrospectionResponse;
+import com.odeyalo.suite.security.auth.token.converter.ValidatedAccessTokenConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;

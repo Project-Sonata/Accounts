@@ -1,9 +1,10 @@
-package com.odeyalo.sonata.account.support.token;
+package com.odeyalo.sonata.account.token;
 
-import com.odeyalo.sonata.account.configuration.WebClientAccessTokenValidationStrategyConfiguration;
-import com.odeyalo.sonata.account.support.token.converter.TokenIntrospectionResponse2ValidatedAccessTokenConverter;
-import com.odeyalo.sonata.account.support.token.converter.ValidatedAccessTokenConverter;
+import com.odeyalo.sonata.account.support.token.WebClientRemoteAccessTokenValidationStrategy;
 import com.odeyalo.sonata.common.authorization.TokenIntrospectionResponse;
+import com.odeyalo.suite.security.auth.token.ValidatedAccessToken;
+import com.odeyalo.suite.security.auth.token.converter.TokenIntrospectionResponse2ValidatedAccessTokenConverter;
+import com.odeyalo.suite.security.auth.token.converter.ValidatedAccessTokenConverter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner;
 import org.springframework.context.annotation.Bean;
